@@ -1,8 +1,6 @@
 package com.example.Food_Delivery.Service;
 
-import com.example.Food_Delivery.DTO.CartItemResponse;
-import com.example.Food_Delivery.DTO.Cart.CartResponse;
-import com.example.Food_Delivery.DTO.CartItemResponse;
+import com.example.Food_Delivery.DTO.Cart.CartItemResponse;
 import com.example.Food_Delivery.Model.*;
 import com.example.Food_Delivery.Repository.CartItemRepository;
 import com.example.Food_Delivery.Repository.CartRepository;
@@ -10,7 +8,6 @@ import com.example.Food_Delivery.Repository.FoodRepository;
 import com.example.Food_Delivery.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

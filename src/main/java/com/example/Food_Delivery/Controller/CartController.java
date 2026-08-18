@@ -1,7 +1,6 @@
 package com.example.Food_Delivery.Controller;
 
-import com.example.Food_Delivery.DTO.CartItemResponse;
-import com.example.Food_Delivery.Model.CartItem;
+import com.example.Food_Delivery.DTO.Cart.CartItemResponse;
 import com.example.Food_Delivery.Service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
