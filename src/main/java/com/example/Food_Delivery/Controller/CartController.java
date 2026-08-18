@@ -1,10 +1,14 @@
 package com.example.Food_Delivery.Controller;
 
+import com.example.Food_Delivery.DTO.CartItemResponse;
+import com.example.Food_Delivery.Model.CartItem;
 import com.example.Food_Delivery.Service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -27,7 +31,7 @@ public class CartController {
     }
 
     @GetMapping("/get/cart")
-    public ResponseEntity<?> getCart(Authentication authentication) {
+    public ResponseEntity<List<CartItemResponse>> getCart(Authentication authentication) {
 
         String email = authentication.getName();
 

@@ -1,5 +1,7 @@
 package com.example.Food_Delivery.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,11 +17,12 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "cart_id",
             nullable = false
     )
+    @JsonIgnore
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,6 +30,7 @@ public class CartItem {
             name = "food_id",
             nullable = false
     )
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Food food;
 
     private Integer quantity;

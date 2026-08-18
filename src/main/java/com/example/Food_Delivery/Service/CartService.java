@@ -1,11 +1,14 @@
 package com.example.Food_Delivery.Service;
 
+import com.example.Food_Delivery.DTO.CartItemResponse;
 import com.example.Food_Delivery.DTO.Cart.CartResponse;
+import com.example.Food_Delivery.DTO.CartItemResponse;
 import com.example.Food_Delivery.Model.*;
 import com.example.Food_Delivery.Repository.CartItemRepository;
 import com.example.Food_Delivery.Repository.CartRepository;
 import com.example.Food_Delivery.Repository.FoodRepository;
 import com.example.Food_Delivery.Repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CartService {
 
     private final CartRepository cartRepository;
@@ -74,16 +78,28 @@ public class CartService {
         return "Food added to cart successfully";
     }
 
-    public List<CartItem> getCart(String email) {
+    public List<CartItemResponse> getCart(String email) {
+
 
         User user = userRepository.findByEmail(email);
         if(user==null) throw new RuntimeException("User Not Found");
 
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Cart is empty"));
+        List<CartItem> cartItems= cartItemRepository.findByCart(cart);
 
-        return cartItemRepository.findByCart(cart);
+        return cartItems.stream().map(this::toMapCart).toList();
     }
+
+    private CartItemResponse toMapCart(CartItem cartItem) {
+        CartItemResponse response = new CartItemResponse();
+
+        response.setId(cartItem.getId());
+        response.setFoodId(cartItem.getFood().getFoodId());
+        response.setQty(cartItem.getQuantity());
+        return response;
+    }
+
 
     public String updateCart(
             String email,

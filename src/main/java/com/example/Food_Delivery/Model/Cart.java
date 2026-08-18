@@ -1,5 +1,6 @@
 package com.example.Food_Delivery.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -39,6 +40,7 @@ public class Cart {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+
     @Builder.Default
     private List<CartItem> cartItems = new ArrayList<>();
 }

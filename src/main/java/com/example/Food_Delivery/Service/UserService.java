@@ -24,8 +24,8 @@ public class UserService {
         return authService.mapToResponse(user);
     }
 
-    public UserResponse updateUser(UserRequest userRequest) {
-        User user = userRepository.findByEmail(userRequest.getEmail());
+    public UserResponse updateUser(UserRequest userRequest,String email) {
+        User user = userRepository.findByEmail(email);
         if (user == null){
             throw new RuntimeException("User Email Not Found");
         }
@@ -58,6 +58,7 @@ public class UserService {
 
     public Message ActivateUser(String email) {
         User user = userRepository.findByEmail(email);
+
         if (user == null){
             throw new RuntimeException("User Email Not Found");
         }
@@ -67,10 +68,10 @@ public class UserService {
         if (user.getUserStatus() == UserStatus.BLOCKED){
             throw new RuntimeException("User is Blocked. So User can't Activate their account");
         }
-        if (user.getUserStatus() == UserStatus.INACTIVE){
-            user.setUserStatus(UserStatus.ACTIVE);
-            userRepository.save(user);
-        }
+
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
         return new Message("User get Activated");
     }
 }

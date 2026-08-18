@@ -19,6 +19,7 @@ import java.util.List;
 public class FoodService {
     private final FoodRepository foodRepository;
     private final ShopRepository shopRepository;
+
     public FoodResponse createFood(FoodRequest foodRequest) {
         if (foodRepository.existsByFoodName(foodRequest.getFoodName()))
            throw new RuntimeException("Food Already Exists");

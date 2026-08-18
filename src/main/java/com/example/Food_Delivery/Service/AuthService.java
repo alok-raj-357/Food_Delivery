@@ -1,8 +1,8 @@
 package com.example.Food_Delivery.Service;
 
+import com.example.Food_Delivery.DTO.Auth.AuthRequest;
 import com.example.Food_Delivery.DTO.User.LoginRequest;
 import com.example.Food_Delivery.DTO.User.LoginResponse;
-import com.example.Food_Delivery.DTO.User.UserRequest;
 import com.example.Food_Delivery.DTO.User.UserResponse;
 import com.example.Food_Delivery.Model.User;
 import com.example.Food_Delivery.Model.UserRole;
@@ -21,14 +21,14 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
-    public UserResponse register(UserRequest userrequest){
+    public UserResponse register(AuthRequest authrequest){
         User user = User.builder()
-                .email(userrequest.getEmail())
-                .password(passwordEncoder.encode(userrequest.getPassword()))
-                .firstName(userrequest.getFirstName())
-                .lastName(userrequest.getLastName())
-                .mobile_number(userrequest.getMob_num())
-                .gender(userrequest.getGender())
+                .email(authrequest.getEmail())
+                .password(passwordEncoder.encode(authrequest.getPassword()))
+                .firstName(authrequest.getFirstName())
+                .lastName(authrequest.getLastName())
+                .mobile_number(authrequest.getMob_num())
+                .gender(authrequest.getGender())
                 .build();
         User savedUser = userRepository.save(user);
         return mapToResponse(savedUser);

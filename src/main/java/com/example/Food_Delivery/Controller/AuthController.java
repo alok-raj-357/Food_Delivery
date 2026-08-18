@@ -1,5 +1,6 @@
 package com.example.Food_Delivery.Controller;
 
+import com.example.Food_Delivery.DTO.Auth.AuthRequest;
 import com.example.Food_Delivery.DTO.User.LoginRequest;
 import com.example.Food_Delivery.DTO.User.LoginResponse;
 import com.example.Food_Delivery.DTO.User.UserRequest;
@@ -24,8 +25,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/Register")
-    public ResponseEntity<UserResponse> register(@RequestBody UserRequest userRequest){
-        return new ResponseEntity<>(authService.register(userRequest), HttpStatus.CREATED);
+    public ResponseEntity<UserResponse> register(@RequestBody AuthRequest authRequest){
+        return new ResponseEntity<>(authService.register(authRequest), HttpStatus.CREATED);
     }
     @PostMapping("/Login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginrequest){

@@ -1,5 +1,6 @@
 package com.example.Food_Delivery.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -41,7 +42,8 @@ public class Food {
     )
     private Shop shop;
 
-    @OneToMany(mappedBy = "food")
+    @OneToMany(mappedBy = "food",fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<CartItem> cartItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "food")

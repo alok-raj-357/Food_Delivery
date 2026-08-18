@@ -21,8 +21,8 @@ public class UserController {
     }
 
     @PatchMapping("/updateUser")
-    public ResponseEntity<UserResponse> updateUser(@RequestBody UserRequest userRequest){
-        return ResponseEntity.ok(userService.updateUser(userRequest));
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UserRequest userRequest,Authentication authentication){
+        return ResponseEntity.ok(userService.updateUser(userRequest,authentication.getName()));
     }
 
     @DeleteMapping("/InActivateUser")
@@ -30,8 +30,8 @@ public class UserController {
         return ResponseEntity.ok(userService.deleteUser(authentication.getName()));
     }
 
-    @PatchMapping("/ActivateUser")
-    public ResponseEntity<Message> ActivateUser(Authentication authentication){
-        return ResponseEntity.ok(userService.ActivateUser(authentication.getName()));
+    @PatchMapping("/ActivateUser/{email}")
+    public ResponseEntity<Message> ActivateUser(@PathVariable String email){
+        return ResponseEntity.ok(userService.ActivateUser(email));
     }
 }

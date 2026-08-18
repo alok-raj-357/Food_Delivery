@@ -25,13 +25,16 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorizeRequests->
                         authorizeRequests
-                                .requestMatchers("/api/auth/Register","/api/auth/Login","/api/restaurant/ReadShop/**","/api/Food/Findfood/**","/api/Food/Findallfood","/api/review/food/**").permitAll()
-                                .requestMatchers("/api/user/findUser","/api/user/updateUser","/api/user/InActivateUser","/api/user/ActivateUser","/api/cart/add", "/api/cart/get/cart",
-                                        "/api/cart/update/**","/api/cart/remove/**","/api/address/**","/api/order/place","/api/order/getOrders","/api/order/cancel/**","/api/payment/pay/**","/api/review/add/**","/api/review/update/**","/api/review/delete/**").hasRole("USER")
+                                .requestMatchers("/api/auth/Register","/api/auth/Login","/api/restaurant/ReadShop/**","/api/Food/**","/api/review/food/**","/api/restaurant/createShop",
+                                        "/api/restaurant/UpdateShop","/api/restaurant/DeleteShop/**","/api/restaurant/ReActivateOwner/**").permitAll()
+
+                                .requestMatchers("/api/user/findUser","/api/user/updateUser","/api/user/InActivateUser","/api/cart/**",
+                                        "/api/address/**","/api/order/place","/api/order/getOrders","/api/order/cancel/**","/api/payment/pay/**","/api/review/add/**","/api/review/update/**","/api/review/delete/**").hasRole("USER")
+
                                 .requestMatchers("/api/auth/create").hasRole("SUPER_ADMIN")
-                                .requestMatchers("/api/restaurant/createShop","/api/restaurant/UpdateShop","/api/Food/Addfood","/api/Food/Updatefood","/api/Food/Change_ActiveStatus/**",
-                                        "/api/order/status/**").hasRole("ADMIN")
-                                .requestMatchers("/api/restaurant/DeleteShop/**","/api/restaurant/ReActivateOwner/**").hasAnyRole("SUPER_ADMIN","ADMIN")
+
+                                .requestMatchers("/api/order/status/**","/api/user/ActivateUser/**").hasAnyRole("ADMIN","SUPER_ADMIN")
+
                                 .requestMatchers("/api/order/getOrder/**","/api/payment/getPayment/**").hasAnyRole("USER","ADMIN")
                                 .anyRequest().authenticated()
                 );
