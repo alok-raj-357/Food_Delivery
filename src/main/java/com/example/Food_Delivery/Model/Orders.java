@@ -37,32 +37,17 @@ public class Orders {
     private LocalDateTime deliveredAt;
     private LocalDateTime cancelledAt;
 
+    @Embedded
+    private DeliveryAddress deliveryAddress;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "user_id",
-            nullable = false
-    )
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "address_id",
-            nullable = false
-    )
-    private Address address;
-
-    @OneToMany(
-            mappedBy = "orders",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
     @Builder.Default
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToOne(
-            mappedBy = "orders",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToOne(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
 }

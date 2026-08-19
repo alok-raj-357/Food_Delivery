@@ -16,25 +16,17 @@ public class CartController {
 
     private final CartService cartService;
 
-    @PostMapping("/add")
+    @PostMapping("/add/")
     public ResponseEntity<?> addToCart(
             @RequestParam String foodId,
             @RequestParam Integer quantity,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                cartService.addToCart(email, foodId, quantity)
-        );
+        return ResponseEntity.ok(cartService.addToCart(authentication.getName(), foodId, quantity));
     }
 
     @GetMapping("/get/cart")
     public ResponseEntity<List<CartItemResponse>> getCart(Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(cartService.getCart(email));
+        return ResponseEntity.ok(cartService.getCart(authentication.getName()));
     }
 
     @PutMapping("/update/{cartItemId}")
@@ -42,25 +34,13 @@ public class CartController {
             @PathVariable String cartItemId,
             @RequestParam Integer quantity,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-
-        return ResponseEntity.ok(
-                cartService.updateCart(email, cartItemId, quantity)
-        );
+        return ResponseEntity.ok(cartService.updateCart(authentication.getName(), cartItemId, quantity));
     }
 
     @DeleteMapping("/remove/{cartItemId}")
     public ResponseEntity<?> removeCart(
             @PathVariable String cartItemId,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-
-        return ResponseEntity.ok(
-                cartService.removeCart(email, cartItemId)
-        );
+        return ResponseEntity.ok(cartService.removeCart(authentication.getName(), cartItemId));
     }
 }

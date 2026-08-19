@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -21,36 +22,42 @@ public class OrderService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
 
-    @Transactional
+    private DeliveryAddress mapToDeliveryAddress(Address address) {
+        DeliveryAddress deliveryAddress = new DeliveryAddress();
+
+        deliveryAddress.setFullName(address.getFullName());
+        deliveryAddress.setMobileNo(address.getMobileNumber());
+        deliveryAddress.setStreetAddress(address.getStreet());
+        deliveryAddress.setCity(address.getCity());
+        deliveryAddress.setState(address.getState());
+        deliveryAddress.setPinCode(address.getPinCode());
+
+        return deliveryAddress;
+    }
+
     public String placeOrder(String email, String addressId) {
-
         User user = userRepository.findByEmail(email);
-
         if (user == null) {
             throw new RuntimeException("User Not Found");
         }
-
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-        List<CartItem> cartItems =
-                cartItemRepository.findByCart(cart);
+        List<CartItem> cartItems = cart.getCartItems();
 
         if (cartItems.isEmpty()) {
             throw new RuntimeException("Cart is empty");
         }
-
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
 
         if (!address.getUser().getUserId().equals(user.getUserId())) {
             throw new RuntimeException("Address does not belong to user");
         }
-
         Orders orders = Orders.builder()
                 .user(user)
-                .address(address)
                 .totalAmount(0.0)
+                .deliveryAddress(mapToDeliveryAddress(address))
                 .orderStatus(OrderStatus.PENDING)
                 .build();
 
@@ -59,20 +66,14 @@ public class OrderService {
         double totalAmount = 0;
 
         for (CartItem cartItem : cartItems) {
-
             Food food = cartItem.getFood();
 
             if (!food.isActive()) {
-                throw new RuntimeException(
-                        food.getFoodName() + " is not available"
-                );
+                throw new RuntimeException(food.getFoodName() + " is not available");
             }
-
             if (food.getShop() == null ||
                     food.getShop().getShopStatus() != ShopStatus.ACTIVE) {
-                throw new RuntimeException(
-                        food.getFoodName() + "'s shop is not active"
-                );
+                throw new RuntimeException(food.getFoodName() + "'s shop is not active");
             }
 
             double price = food.getPrice();
@@ -90,52 +91,43 @@ public class OrderService {
                     .price(price)
                     .build();
 
-            orderItemRepository.save(orderItem);
-
             totalAmount += itemTotal;
         }
 
         orders.setTotalAmount(totalAmount);
         ordersRepository.save(orders);
 
-        cartItemRepository.deleteAll(cartItems);
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
 
-        return "Order placed successfully";
+        return "Order is Pending";
     }
 
     public List<Orders> getOrders(String email) {
-
         User user = userRepository.findByEmail(email);
 
         if (user == null) {
             throw new RuntimeException("User Not Found");
         }
-
         return ordersRepository.findByUser(user);
     }
 
     public Orders getOrder(String email, String orderId) {
-
         User user = userRepository.findByEmail(email);
 
         if (user == null) {
             throw new RuntimeException("User Not Found");
         }
-
         Orders orders = ordersRepository.findById(orderId)
-                .orElseThrow(() ->
-                        new RuntimeException("Order not found"));
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
         if (!orders.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException(
-                    "Order does not belong to user"
-            );
+            throw new RuntimeException("Order does not belong to user");
         }
 
         return orders;
     }
     public String cancelOrder(String email, String orderId) {
-
         Orders orders = ordersRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
@@ -146,18 +138,13 @@ public class OrderService {
         if (orders.getOrderStatus() == OrderStatus.CANCELLED) {
             throw new RuntimeException("Order is already cancelled");
         }
-
         orders.setOrderStatus(OrderStatus.CANCELLED);
 
         ordersRepository.save(orders);
 
         return "Order cancelled successfully";
     }
-    public String updateOrderStatus(
-            String email,
-            String orderId,
-            OrderStatus status) {
-
+    public String updateOrderStatus(String email, String orderId, OrderStatus status) {
         User user = userRepository.findByEmail(email);
 
         if (user == null) {
@@ -167,10 +154,8 @@ public class OrderService {
         if (user.getRole() != UserRole.ADMIN) {
             throw new RuntimeException("Only admin can update order status");
         }
-
         Orders orders = ordersRepository.findById(orderId)
-                .orElseThrow(() ->
-                        new RuntimeException("Order not found"));
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
         if (orders.getOrderStatus() == OrderStatus.DELIVERED) {
             throw new RuntimeException("Order is already delivered");

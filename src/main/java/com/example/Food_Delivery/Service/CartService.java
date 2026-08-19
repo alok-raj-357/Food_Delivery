@@ -91,7 +91,7 @@ public class CartService {
     private CartItemResponse toMapCart(CartItem cartItem) {
         CartItemResponse response = new CartItemResponse();
 
-        response.setId(cartItem.getId());
+        response.setCartItemId(cartItem.getId());
         response.setFoodId(cartItem.getFood().getFoodId());
         response.setQty(cartItem.getQuantity());
         return response;

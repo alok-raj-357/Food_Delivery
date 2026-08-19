@@ -1,11 +1,15 @@
 package com.example.Food_Delivery.Controller;
 
+import com.example.Food_Delivery.DTO.Address.AddressRequest;
+import com.example.Food_Delivery.DTO.Address.AddressResponse;
 import com.example.Food_Delivery.Model.Address;
 import com.example.Food_Delivery.Service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/address")
@@ -15,50 +19,31 @@ public class AddressController {
     private final AddressService addressService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addAddress(
-            @RequestBody Address address,
+    public ResponseEntity<AddressResponse> addAddress(
+            @RequestBody AddressRequest addressRequest,
             Authentication authentication) {
 
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                addressService.addAddress(email, address)
-        );
+        return ResponseEntity.ok(addressService.addAddress(authentication.getName(), addressRequest));
     }
 
     @GetMapping("/getAddress")
-    public ResponseEntity<?> getAddresses(
-            Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                addressService.getAddresses(email)
-        );
+    public ResponseEntity<List<AddressResponse>> getAddresses(Authentication authentication) {
+        return ResponseEntity.ok(addressService.getAddresses(authentication.getName()));
     }
 
     @PutMapping("/update/{addressId}")
-    public ResponseEntity<?> updateAddress(
+    public ResponseEntity<AddressResponse> updateAddress(
             @PathVariable String addressId,
-            @RequestBody Address address,
+            @RequestBody AddressRequest addressRequest,
             Authentication authentication) {
 
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                addressService.updateAddress(email, addressId, address)
-        );
+        return ResponseEntity.ok(addressService.updateAddress(authentication.getName(), addressId, addressRequest));
     }
 
     @DeleteMapping("/delete/{addressId}")
     public ResponseEntity<?> deleteAddress(
             @PathVariable String addressId,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                addressService.deleteAddress(email, addressId)
-        );
+        return ResponseEntity.ok(addressService.deleteAddress(authentication.getName(), addressId));
     }
 }

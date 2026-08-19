@@ -11,52 +11,32 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/order")
 @RequiredArgsConstructor
 public class OrderController {
-
     private final OrderService orderService;
 
-    @PostMapping("/place")
-    public ResponseEntity<?> placeOrder(
+    @PostMapping("/place/")
+    public ResponseEntity<String> placeOrder(
             @RequestParam String addressId,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                orderService.placeOrder(email, addressId)
-        );
+        return ResponseEntity.ok(orderService.placeOrder(authentication.getName(), addressId));
     }
 
     @GetMapping("/getOrders")
     public ResponseEntity<?> getOrders(Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                orderService.getOrders(email)
-        );
+        return ResponseEntity.ok(orderService.getOrders(authentication.getName()));
     }
 
     @GetMapping("/getOrder/{orderId}")
     public ResponseEntity<?> getOrder(
             @PathVariable String orderId,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                orderService.getOrder(email, orderId)
+        return ResponseEntity.ok(orderService.getOrder(authentication.getName(), orderId)
         );
     }
     @PutMapping("/cancel/{orderId}")
     public ResponseEntity<?> cancelOrder(
             @PathVariable String orderId,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                orderService.cancelOrder(email, orderId)
-        );
+        return ResponseEntity.ok(orderService.cancelOrder(authentication.getName(), orderId));
     }
 
     @PatchMapping("/status/{orderId}")
@@ -65,10 +45,6 @@ public class OrderController {
             @RequestParam OrderStatus status,
             Authentication authentication) {
 
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                orderService.updateOrderStatus(email, orderId, status)
-        );
+        return ResponseEntity.ok(orderService.updateOrderStatus(authentication.getName(), orderId, status));
     }
 }

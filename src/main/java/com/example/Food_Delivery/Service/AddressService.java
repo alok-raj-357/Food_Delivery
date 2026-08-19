@@ -1,5 +1,7 @@
 package com.example.Food_Delivery.Service;
 
+import com.example.Food_Delivery.DTO.Address.AddressRequest;
+import com.example.Food_Delivery.DTO.Address.AddressResponse;
 import com.example.Food_Delivery.Model.Address;
 import com.example.Food_Delivery.Model.User;
 import com.example.Food_Delivery.Repository.AddressRepository;
@@ -16,7 +18,7 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
 
-    public String addAddress(String email, Address address) {
+    public AddressResponse addAddress(String email, AddressRequest addressRequest) {
 
         User user = userRepository.findByEmail(email);
 
@@ -24,9 +26,19 @@ public class AddressService {
             throw new RuntimeException("User Not Found");
         }
 
-        address.setUser(user);
 
-        if (address.isDefaultAddress()) {
+        Address address = Address.builder()
+                .fullName(addressRequest.getFullName())
+                .mobileNumber(addressRequest.getMobileNumber())
+                .houseNumber(addressRequest.getHouseNumber())
+                .street(addressRequest.getStreet())
+                .city(addressRequest.getCity())
+                .state(addressRequest.getState())
+                .pinCode(addressRequest.getPinCode())
+                .user(user)
+                .build();
+
+        if (addressRequest.isDefaultAddress()) {
 
             List<Address> addresses =
                     addressRepository.findByUser(user);
@@ -34,7 +46,7 @@ public class AddressService {
             for (Address oldAddress : addresses) {
                 oldAddress.setDefaultAddress(false);
             }
-
+            address.setDefaultAddress(true);
             addressRepository.saveAll(addresses);
 
         } else {
@@ -47,96 +59,81 @@ public class AddressService {
             }
         }
 
-        addressRepository.save(address);
 
-        return "Address added successfully";
+        Address savedAddress = addressRepository.save(address);
+        return maptoResponse(savedAddress);
+    }
+    public AddressResponse maptoResponse(Address savedAddress){
+        AddressResponse response = AddressResponse.builder()
+                .addressId(savedAddress.getAddressId())
+                .fullName(savedAddress.getFullName())
+                .mobileNumber(savedAddress.getMobileNumber())
+                .houseNumber(savedAddress.getHouseNumber())
+                .street(savedAddress.getStreet())
+                .city(savedAddress.getCity())
+                .state(savedAddress.getState())
+                .pinCode(savedAddress.getPinCode())
+                .build();
+        return response;
     }
 
-    public List<Address> getAddresses(String email) {
-
+    public List<AddressResponse> getAddresses(String email) {
         User user = userRepository.findByEmail(email);
-
         if (user == null) {
             throw new RuntimeException("User Not Found");
         }
-
-        return addressRepository.findByUser(user);
+        List<Address> addresses =  addressRepository.findByUser(user);
+        return addresses.stream().map(this::maptoResponse).toList();
     }
 
-    public String updateAddress(
-            String email,
-            String addressId,
-            Address address) {
+    public AddressResponse updateAddress(String email, String addressId, AddressRequest addressRequest) {
 
         User user = userRepository.findByEmail(email);
-
         if (user == null) {
             throw new RuntimeException("User Not Found");
         }
-
         Address oldAddress = addressRepository.findById(addressId)
-                .orElseThrow(() ->
-                        new RuntimeException("Address not found"));
+                .orElseThrow(() -> new RuntimeException("Address not found"));
 
         if (!oldAddress.getUser().getUserId()
                 .equals(user.getUserId())) {
-
-            throw new RuntimeException(
-                    "Address does not belong to user"
-            );
+            throw new RuntimeException("Address does not belong to user");
         }
 
-        oldAddress.setFullName(address.getFullName());
-        oldAddress.setMobileNumber(address.getMobileNumber());
-        oldAddress.setHouseNumber(address.getHouseNumber());
-        oldAddress.setStreet(address.getStreet());
-        oldAddress.setCity(address.getCity());
-        oldAddress.setState(address.getState());
-        oldAddress.setPinCode(address.getPinCode());
+        oldAddress.setFullName(addressRequest.getFullName());
+        oldAddress.setMobileNumber(addressRequest.getMobileNumber());
+        oldAddress.setHouseNumber(addressRequest.getHouseNumber());
+        oldAddress.setStreet(addressRequest.getStreet());
+        oldAddress.setCity(addressRequest.getCity());
+        oldAddress.setState(addressRequest.getState());
+        oldAddress.setPinCode(addressRequest.getPinCode());
 
-        if (address.isDefaultAddress()) {
-
-            List<Address> addresses =
-                    addressRepository.findByUser(user);
-
+        if (addressRequest.isDefaultAddress()) {
+            List<Address> addresses = addressRepository.findByUser(user);
             for (Address a : addresses) {
                 a.setDefaultAddress(false);
             }
-
             addressRepository.saveAll(addresses);
-
             oldAddress.setDefaultAddress(true);
         }
-
         addressRepository.save(oldAddress);
-
-        return "Address updated successfully";
+        return maptoResponse(oldAddress);
     }
 
-    public String deleteAddress(
-            String email,
-            String addressId) {
+    public String deleteAddress(String email, String addressId) {
 
         User user = userRepository.findByEmail(email);
-
         if (user == null) {
             throw new RuntimeException("User Not Found");
         }
-
         Address address = addressRepository.findById(addressId)
-                .orElseThrow(() ->
-                        new RuntimeException("Address not found"));
+                .orElseThrow(() -> new RuntimeException("Address not found"));
 
         if (!address.getUser().getUserId()
                 .equals(user.getUserId())) {
-
-            throw new RuntimeException(
-                    "Address does not belong to user"
-            );
+            throw new RuntimeException("Address does not belong to user");
         }
-
         addressRepository.delete(address);
-
         return "Address deleted successfully";
     }
 }
