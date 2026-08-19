@@ -26,16 +26,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests->
                         authorizeRequests
                                 .requestMatchers("/api/auth/Register","/api/auth/Login","/api/restaurant/ReadShop/**","/api/Food/**","/api/review/food/**","/api/restaurant/createShop",
-                                        "/api/restaurant/UpdateShop","/api/restaurant/DeleteShop/**","/api/restaurant/ReActivateOwner/**").permitAll()
+                                        "/api/restaurant/UpdateShop","/api/restaurant/DeleteShop/**","/api/restaurant/ReActivateOwner/**","/api/order/cancel/**").permitAll()
 
                                 .requestMatchers("/api/user/findUser","/api/user/updateUser","/api/user/InActivateUser","/api/cart/**",
-                                        "/api/address/**","/api/order/place","/api/order/getOrders","/api/order/cancel/**","/api/payment/pay/**","/api/review/add/**","/api/review/update/**","/api/review/delete/**").hasRole("USER")
+                                        "/api/address/**","/api/order/place","/api/order/getOrders","/api/payment/pay/**","/api/review/add/**","/api/review/update/**","/api/review/delete/**").hasRole("USER")
 
                                 .requestMatchers("/api/auth/create").hasRole("SUPER_ADMIN")
 
-                                .requestMatchers("/api/order/status/**","/api/user/ActivateUser/**").hasAnyRole("ADMIN","SUPER_ADMIN")
+                                .requestMatchers("/api/order/status/**","/api/user/ActivateUser/**","/api/payment/getPayment/**").hasAnyRole("ADMIN","SUPER_ADMIN")
 
-                                .requestMatchers("/api/order/getOrder/**","/api/payment/getPayment/**").hasAnyRole("USER","ADMIN")
+                                .requestMatchers("/api/order/getOrder/**").hasAnyRole("USER","ADMIN")
                                 .anyRequest().authenticated()
                 );
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

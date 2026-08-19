@@ -3,7 +3,6 @@ package com.example.Food_Delivery.Model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ public class Orders {
     private String orderId;
 
     private Double totalAmount;
+    private Double totalPrice;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

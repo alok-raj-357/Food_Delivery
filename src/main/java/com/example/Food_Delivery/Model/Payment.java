@@ -1,5 +1,6 @@
 package com.example.Food_Delivery.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,5 +34,6 @@ public class Payment {
             nullable = false,
             unique = true
     )
+    @JsonIgnore
     private Orders orders;
 }

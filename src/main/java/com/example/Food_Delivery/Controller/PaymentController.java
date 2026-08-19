@@ -14,26 +14,16 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/pay/{orderId}")
-    public ResponseEntity<?> makePayment(
+    public ResponseEntity<String> makePayment(
             @PathVariable String orderId,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                paymentService.makePayment(email, orderId)
-        );
+        return ResponseEntity.ok(paymentService.makePayment(authentication.getName(), orderId));
     }
 
     @GetMapping("/getPayment/{orderId}")
     public ResponseEntity<?> getPayment(
             @PathVariable String orderId,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                paymentService.getPayment(email, orderId)
-        );
+        return ResponseEntity.ok(paymentService.getPayment(authentication.getName(), orderId));
     }
 }

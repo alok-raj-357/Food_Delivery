@@ -1,5 +1,6 @@
 package com.example.Food_Delivery.Controller;
 
+import com.example.Food_Delivery.DTO.Orders.OrderResById;
 import com.example.Food_Delivery.Model.OrderStatus;
 import com.example.Food_Delivery.Service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
 
-    @PostMapping("/place/")
+    @PostMapping("/place")
     public ResponseEntity<String> placeOrder(
             @RequestParam String addressId,
             Authentication authentication) {
@@ -26,17 +27,14 @@ public class OrderController {
     }
 
     @GetMapping("/getOrder/{orderId}")
-    public ResponseEntity<?> getOrder(
+    public ResponseEntity<OrderResById> getOrder(
             @PathVariable String orderId,
             Authentication authentication) {
-        return ResponseEntity.ok(orderService.getOrder(authentication.getName(), orderId)
-        );
+        return ResponseEntity.ok(orderService.getOrder(authentication.getName(), orderId));
     }
     @PutMapping("/cancel/{orderId}")
-    public ResponseEntity<?> cancelOrder(
-            @PathVariable String orderId,
-            Authentication authentication) {
-        return ResponseEntity.ok(orderService.cancelOrder(authentication.getName(), orderId));
+    public ResponseEntity<?> cancelOrder(@PathVariable String orderId){
+        return ResponseEntity.ok(orderService.cancelOrder(orderId));
     }
 
     @PatchMapping("/status/{orderId}")
