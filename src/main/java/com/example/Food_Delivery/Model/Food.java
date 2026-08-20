@@ -44,11 +44,15 @@ public class Food {
 
     @OneToMany(mappedBy = "food",fetch = FetchType.LAZY)
     @JsonIgnore
+    @Builder.Default
     private List<CartItem> cartItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "food")
+    @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "food")
+    @OneToMany(mappedBy = "food",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
+    @Builder.Default
     private List<Review> reviews = new ArrayList<>();
 }

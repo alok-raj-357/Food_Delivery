@@ -1,5 +1,6 @@
 package com.example.Food_Delivery.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -52,11 +53,15 @@ public class User {
     private Cart cart;
 
     @OneToMany(mappedBy = "user")
+    @Builder.Default
     private List<Address> addresses = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
+    @Builder.Default
     private List<Orders> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    @Builder.Default
     private List<Review> reviews = new ArrayList<>();
 }

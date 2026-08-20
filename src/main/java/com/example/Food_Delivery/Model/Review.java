@@ -37,4 +37,8 @@ public class Review {
             nullable = false
     )
     private Food food;
+
+    @OneToOne
+    @JoinColumn(name = "order_item_id", nullable = false, unique = true)
+    private OrderItem orderItem;
 }

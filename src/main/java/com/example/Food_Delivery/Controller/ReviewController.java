@@ -1,5 +1,8 @@
 package com.example.Food_Delivery.Controller;
 
+import com.example.Food_Delivery.DTO.Review.ReviewRequest;
+import com.example.Food_Delivery.DTO.Review.ReviewResponse;
+import com.example.Food_Delivery.DTO.Review.UpdateReviewRequest;
 import com.example.Food_Delivery.Model.Review;
 import com.example.Food_Delivery.Service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/review")
 @RequiredArgsConstructor
@@ -15,50 +20,24 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/add/{foodId}")
-    public ResponseEntity<?> addReview(
-            @PathVariable String foodId,
-            @RequestBody Review review,
+    @PostMapping("/add")
+    public ResponseEntity<ReviewResponse> addReview(
+            @RequestBody ReviewRequest reviewRequest,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                reviewService.addReview(email, foodId, review)
-        );
+        return ResponseEntity.ok(reviewService.addReview(authentication.getName(),  reviewRequest));
     }
 
     @GetMapping("/food/{foodId}")
-    public ResponseEntity<?> getFoodReviews(
+    public ResponseEntity<List<ReviewResponse>> getFoodReviews(
             @PathVariable String foodId) {
-
-        return ResponseEntity.ok(
-                reviewService.getFoodReviews(foodId)
-        );
+        return ResponseEntity.ok(reviewService.getFoodReviews(foodId));
     }
 
     @PutMapping("/update/{reviewId}")
     public ResponseEntity<?> updateReview(
             @PathVariable String reviewId,
-            @RequestBody Review review,
+            @RequestBody UpdateReviewRequest updateReviewRequest,
             Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                reviewService.updateReview(email, reviewId, review)
-        );
-    }
-
-    @DeleteMapping("/delete/{reviewId}")
-    public ResponseEntity<?> deleteReview(
-            @PathVariable String reviewId,
-            Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return ResponseEntity.ok(
-                reviewService.deleteReview(email, reviewId)
-        );
+        return ResponseEntity.ok(reviewService.updateReview(authentication.getName(), reviewId, updateReviewRequest));
     }
 }

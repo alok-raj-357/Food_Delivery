@@ -1,5 +1,6 @@
 package com.example.Food_Delivery.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,4 +34,8 @@ public class OrderItem {
             nullable = false
     )
     private Food food;
+
+    @OneToOne(mappedBy = "orderItem")
+    @JsonIgnore
+    private Review review;
 }

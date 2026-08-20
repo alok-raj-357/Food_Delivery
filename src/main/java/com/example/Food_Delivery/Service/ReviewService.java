@@ -1,13 +1,11 @@
 package com.example.Food_Delivery.Service;
 
-import com.example.Food_Delivery.Model.Food;
-import com.example.Food_Delivery.Model.Review;
-import com.example.Food_Delivery.Model.ShopStatus;
-import com.example.Food_Delivery.Model.User;
-import com.example.Food_Delivery.Repository.FoodRepository;
-import com.example.Food_Delivery.Repository.ReviewRepository;
-import com.example.Food_Delivery.Repository.UserRepository;
-import jakarta.validation.constraints.Digits;
+import com.example.Food_Delivery.DTO.Review.ReviewRequest;
+import com.example.Food_Delivery.DTO.Review.ReviewResponse;
+import com.example.Food_Delivery.DTO.Review.UpdateReviewRequest;
+import com.example.Food_Delivery.Model.*;
+import com.example.Food_Delivery.Repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,26 +13,34 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final OrderItemRepository orderItemRepository;
     private final FoodRepository foodRepository;
 
-    public String addReview(
-            String email,
-            String foodId,
-            Review review) {
+    public ReviewResponse addReview(String email, ReviewRequest reviewRequest) {
 
         User user = userRepository.findByEmail(email);
-
         if (user == null) {
             throw new RuntimeException("User Not Found");
         }
+        OrderItem orderItem = orderItemRepository.findByOrderItemIdAndOrdersUserUserId(reviewRequest.getOrderItemId(), user.getUserId())
+                .orElseThrow (()-> new RuntimeException("OrderItems not Found"));
 
-        Food food = foodRepository.findById(foodId)
-                .orElseThrow(() ->
-                        new RuntimeException("Food not found"));
+        if(orderItem.getOrders().getDeliveredAt()==null)
+            throw new RuntimeException("Only delivered food can be reviewed");
+
+        if (reviewRepository.existsByUserAndOrderItem(user, orderItem)) {
+            throw new RuntimeException("You have already reviewed this food");
+        }
+
+        Food food = orderItem.getFood();
+        if (food == null){
+            throw new RuntimeException("Food Not Found");
+        }
 
         if (!food.isActive()) {
             throw new RuntimeException("Food is not available");
@@ -45,41 +51,49 @@ public class ReviewService {
             throw new RuntimeException("Shop is not active");
         }
 
-        if (review.getRating() == null ||
-                review.getRating() < 1 ||
-                review.getRating() > 5) {
-            throw new RuntimeException(
-                    "Rating must be between 1 and 5"
-            );
+        if (reviewRequest.getRating() == null ||
+                reviewRequest.getRating() < 1 ||
+                reviewRequest.getRating() > 5) {
+            throw new RuntimeException("Rating must be between 1 and 5");
         }
 
-        if (reviewRepository.findByUserAndFood(user, food).isPresent()) {
-            throw new RuntimeException(
-                    "You have already reviewed this food"
-            );
-        }
-
+        Review review = new Review();
+        review.setComment(reviewRequest.getComment());
+        review.setRating(reviewRequest.getRating());
         review.setUser(user);
         review.setFood(food);
+        review.setOrderItem(orderItem);
 
-        reviewRepository.save(review);
-
-        return "Review added successfully";
+        Review savedReview  = reviewRepository.save(review);
+        return mapToReviewResponse(savedReview);
     }
 
-    public List<Review> getFoodReviews(String foodId) {
+    private ReviewResponse mapToReviewResponse(Review savedReview) {
+        ReviewResponse response = new ReviewResponse();
+
+        response.setReviewId(savedReview.getReviewId());
+        response.setOrderItemId(savedReview.getOrderItem().getOrderItemId());
+        response.setUserName(savedReview.getUser().getFirstName()+" "+savedReview.getUser().getLastName());
+        response.setFoodId(savedReview.getFood().getFoodId());
+        response.setComment(savedReview.getComment());
+        response.setRating(savedReview.getRating());
+        return response;
+    }
+
+    public List<ReviewResponse> getFoodReviews(String foodId) {
 
         Food food = foodRepository.findById(foodId)
-                .orElseThrow(() ->
-                        new RuntimeException("Food not found"));
+                .orElseThrow(() -> new RuntimeException("Food not found"));
 
-        return reviewRepository.findByFood(food);
+        List<Review> reviews=reviewRepository.findByFood(food);
+        return reviews.stream().map(this::mapToReviewResponse).toList();
+
     }
 
-    public String updateReview(
+    public ReviewResponse updateReview(
             String email,
             String reviewId,
-            Review review) {
+            UpdateReviewRequest updateReviewRequest) {
 
         User user = userRepository.findByEmail(email);
 
@@ -88,57 +102,25 @@ public class ReviewService {
         }
 
         Review oldReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() ->
-                        new RuntimeException("Review not found"));
+                .orElseThrow(() -> new RuntimeException("Review not found"));
 
         if (!oldReview.getUser().getUserId()
                 .equals(user.getUserId())) {
 
-            throw new RuntimeException(
-                    "Review does not belong to user"
-            );
+            throw new RuntimeException("Review does not belong to user");
         }
 
-        if (review.getRating() == null ||
-                review.getRating() < 1 ||
-                review.getRating() > 5) {
-            throw new RuntimeException(
-                    "Rating must be between 1 and 5"
-            );
+        if (updateReviewRequest.getRating() == null ||
+                updateReviewRequest.getRating() < 1 ||
+                updateReviewRequest.getRating() > 5) {
+            throw new RuntimeException("Rating must be between 1 and 5");
         }
 
-        oldReview.setRating(review.getRating());
-        oldReview.setComment(review.getComment());
+        oldReview.setRating(updateReviewRequest.getRating());
+        oldReview.setComment(updateReviewRequest.getComment());
 
-        reviewRepository.save(oldReview);
+        Review saveReview = reviewRepository.save(oldReview);
 
-        return "Review updated successfully";
-    }
-
-    public String deleteReview(
-            String email,
-            String reviewId) {
-
-        User user = userRepository.findByEmail(email);
-
-        if (user == null) {
-            throw new RuntimeException("User Not Found");
-        }
-
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() ->
-                        new RuntimeException("Review not found"));
-
-        if (!review.getUser().getUserId()
-                .equals(user.getUserId())) {
-
-            throw new RuntimeException(
-                    "Review does not belong to user"
-            );
-        }
-
-        reviewRepository.delete(review);
-
-        return "Review deleted successfully";
+        return mapToReviewResponse(saveReview);
     }
 }
