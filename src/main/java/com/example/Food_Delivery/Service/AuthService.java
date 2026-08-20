@@ -55,7 +55,7 @@ public class AuthService {
         return new LoginResponse(token);
     }
 
-    public String createAdmin(String email, User user) {
+    public String createAdmin(String email, AuthRequest authRequest) {
 
         User superAdmin = userRepository.findByEmail(email);
 
@@ -69,12 +69,12 @@ public class AuthService {
             );
         }
 
-        if (userRepository.findByEmail(user.getEmail()) != null) {
+        if (userRepository.findByEmail(authRequest.getEmail()) != null) {
             throw new RuntimeException(
                     "Email already exists"
             );
         }
-
+        User user = new User();
         user.setRole(UserRole.ADMIN);
         user.setUserStatus(UserStatus.ACTIVE);
 

@@ -34,14 +34,14 @@ public class AuthController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createAdmin(
-            @RequestBody User user,
+    public ResponseEntity<String> createAdmin(
+            @RequestBody AuthRequest authRequest,
             Authentication authentication) {
 
         String email = authentication.getName();
 
         return ResponseEntity.ok(
-                authService.createAdmin(email, user)
+                authService.createAdmin(email, authRequest)
         );
     }
 }
