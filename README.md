@@ -19,6 +19,15 @@ A backend application for a Food Delivery Platform built using Spring Boot and M
 - Database Transactions
 - RESTful APIs
 
+## API Documentation
+
+Interactive API documentation and end-point testing are available via Swagger UI when running the application locally:
+
+- **Swagger UI:** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+- **OpenAPI Specs (JSON):** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+
+*(Note: Replace `8080` with your custom port if configured in `application.properties`)*
+
 ## Technologies Used
 
 - Java
@@ -97,3 +106,4 @@ Preparing
 Out for Delivery
     ↓
 Delivered
+
