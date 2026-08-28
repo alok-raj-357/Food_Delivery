@@ -2,6 +2,9 @@
 
 A backend application for a Food Delivery Platform built using Spring Boot and MySQL. The application provides APIs for users to browse restaurants and food items, manage their cart, place orders, make payments, manage addresses, and add reviews.
 
+Swagger API Documentation: [https://xsparc.up.railway.app/swagger-ui/index.html](https://xsparc.up.railway.app/swagger-ui/index.html)
+Live Base API: [https://xsparc.up.railway.app](https://xsparc.up.railway.app)
+
 ## Features
 
 - User Registration and Authentication
@@ -22,10 +25,6 @@ A backend application for a Food Delivery Platform built using Spring Boot and M
 ## API Documentation
 
 Interactive API documentation and end-point testing are available via Swagger UI when running the application locally:
-
-Food_Delivery URL: [https://xsparc.up.railway.app/swagger-ui/index.html]
-
-*(Note: Replace `8080` with your custom port if configured in `application.properties`)*
 
 ## Technologies Used
 
@@ -105,4 +104,15 @@ Preparing
 Out for Delivery
     ↓
 Delivered
+
+```
+## 👤 Author & Copyright
+
+**Project Created By:** Alok Raj
+**Education:** B.Tech CSE  
+**Tech Stack:** Java | Spring Boot | MySQL | Cloud Deployment  
+**LinkedIn:** [Alok Raj Profile](https://www.linkedin.com/in/alok-raj-19683a317)
+
+Copyright © 2026 Alok Raj. All rights reserved.  
+This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.
 
